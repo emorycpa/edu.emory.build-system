@@ -12,7 +12,7 @@ function logFileChange(event) {
 }
 
 function handleError(err) {
-  error(err);
+  console.error(err);
   try {
     this.emit('end');
   } catch (e) {
