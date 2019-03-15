@@ -1,6 +1,6 @@
 const buildConfig = require('./build-config.json');
 
-const {bootstrap, serve, css, js, html, static, gulpFn} = require('emory-website-build-system');
+const {bootstrap, serve, css, js, html, static, gulpFn} = require('edu.emory.build-system');
 
 // Setup tasks
 serve(buildConfig);
