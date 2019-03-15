@@ -147,7 +147,7 @@ GulpFunctions.prototype.normalizePath = function normalizePath() {
 }
 
 GulpFunctions.prototype.handleError = function handleError(err) {
-  error(err);
+  console.error(err);
   try {
       this.emit('end');
   } catch (e) {
