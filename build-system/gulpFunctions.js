@@ -12,8 +12,10 @@ function logFileChange(event) {
 }
 
 function handleError(err) {
-  console.error(err);
   try {
+    console.error("FILE:" + err.file);
+    console.error("MESSAGE:" + err.messageFormatted);
+    console.error("STACK:" + err.stack);
     this.emit('end');
   } catch (e) {
     console.log(e);
@@ -146,17 +148,7 @@ GulpFunctions.prototype.normalizePath = function normalizePath() {
       .replace(/\\/g, "/");
 }
 
-GulpFunctions.prototype.handleError = function handleError(err) {
-  console.error(err);
-  try {
-      this.emit('end');
-  } catch (e) {
-      console.log(e);
-      process.exit(1);
-  }
-}
-
-
+GulpFunctions.prototype.handleError = handleError;
 
 GulpFunctions.prototype.gulp = gulp;
 
