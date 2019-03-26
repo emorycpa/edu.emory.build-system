@@ -1,6 +1,6 @@
 {
   "name": "edu.emory.build-system",
-  "version": "1.0.4", 
+  "version": "1.0.4",
   "description": "This is the build system for Emory University CPA websites",
   "main": "index.js",
   "scripts": {
@@ -24,10 +24,10 @@
   "dependencies": {
     "autoprefixer": "^9.5.0",
     "browser-sync": "^2.26.3",
+    "clean-css": "^4.2.1",
     "gulp": "^4.0.0",
     "gulp-clean": "^0.4.0",
     "gulp-concat": "^2.6.1",
-    "gulp-cssmin": "^0.2.0",
     "gulp-if": "^2.0.2",
     "gulp-less": "^4.0.1",
     "gulp-mustache": "^4.1.1",
