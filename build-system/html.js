@@ -14,7 +14,7 @@ var config = {};
 
 const getWatchedArray = function(configObj){
   const watchArray = [];
-    watchArray.push(normalizePath(configObj.js.source));
+    watchArray.push(normalizePath(configObj.html.source));
     if(configObj.html.templateEngine === 'njk' && configObj.html.templates != false){
       watchArray.push(normalizePath(config.html.templates + '/**/*.*'));
     }
@@ -58,12 +58,13 @@ module.exports = function(configurationObject){
   });
       
 
-  register('watch:build:html', null , function watchBuildHtmlFn (done){
+  register('watch:build:html', function watchBuildHtmlFn (done){
     watch(getWatchedArray(config), ['build:html']);
     done();
   });
 
-  register('watch:serve:build:html', null , function watchServeBuildHtmlFn (done){
+  register('watch:serve:build:html' , function watchServeBuildHtmlFn (done){
+    
     if(fn['serve:reload']){
       watch(getWatchedArray(config), ['build:html', 'serve:reload']);
     } else {

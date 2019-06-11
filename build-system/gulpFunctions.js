@@ -1,11 +1,25 @@
 const gulp = require('gulp');
 const path = require('path');
 
+const GULPFN_KEY = Symbol.for('edu.emory.build-system.gulp');
+
 const GulpFunctions = function GulpFunctions(){
     this.fn = {};
     this.dependencies = {};
+    Object.defineProperty(this, "instance", {
+        get: function(){
+          return global[GULPFN_KEY];
+        }
+      });
+      Object.freeze(this);
     return this;
 };
+
+if(!(Object.getOwnPropertySymbols(global).indexOf(GULPFN_KEY) > -1)){
+  global[GULPFN_KEY] = new GulpFunctions();
+} else {
+  console.log( "Global Symbol of gulp function object in use.");
+}
 
 function logFileChange(event) {
   console.log('File ' + event.path ? event.path : event + ' was changed, running tasks...');
@@ -53,7 +67,7 @@ function reisterGulp4(name, fn, dependencies){
   localTaskArray.push(localFn);
 
   gulp.task(name, gulp.series.apply(gulp, localTaskArray));
-
+  global[GULPFN_KEY].fn[name] = true;
 };
 
 function reisterGulp3(name, fn, dependencies){
@@ -103,17 +117,23 @@ GulpFunctions.prototype.watch = function(globs, actions){
     switch(typeof actions) {
       
       case 'function':
-        gulp.watch(globs, actions).on('change', logFileChange);
+        gulp.watch(globs, {}, actions).on('change', function(path){
+          console.log('File ' + path + ' was changed, running tasks...');
+        });
       break;
       
       case 'string':
-        gulp.watch(globs, gulp.series(actions, function(done){done();})).on('change', logFileChange);
+        console.log(gulp.watch(globs, {}, gulp.series(actions, function(done){done();})).on('change', function(path){
+          console.log('File ' + path + ' was changed, running tasks...');
+        }));
       break;
       
       case 'object':
         if((Array.isArray(actions)) && actions.every(function(value){return typeof value === 'string'})){
           actions.push(function(done){done();});
-          gulp.watch(globs, gulp.series.apply(gulp,actions)).on('change', logFileChange);
+          gulp.watch(globs, {}, gulp.series.apply(gulp,actions)).on('change', function(path){
+            console.log('File ' + path + ' was changed, running tasks...');
+          });
         }
       break;
     
@@ -152,4 +172,4 @@ GulpFunctions.prototype.handleError = handleError;
 
 GulpFunctions.prototype.gulp = gulp;
 
-module.exports = new GulpFunctions();
+module.exports = global[GULPFN_KEY]["instance"];
