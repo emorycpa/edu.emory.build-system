@@ -1,6 +1,6 @@
 {
   "name": "edu.emory.build-system",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "This is the build system for Emory University CPA websites",
   "main": "index.js",
   "scripts": {
@@ -38,9 +38,9 @@
     "gulp-typescript": "^5.0.1",
     "gulp-uglify": "^3.0.2",
     "lodash.clonedeep": "^4.5.0",
-    "lodash.defaultsdeep": "^4.6.0",
+    "lodash.defaultsdeep": "^4.6.1",
     "lodash.isfunction": "^3.0.9",
-    "lodash.merge": "^4.6.1",
+    "lodash.merge": "^4.6.2",
     "nunjucks": "^3.2.0",
     "plugin-error": "^1.0.1",
     "replace-ext": "^1.0.0",

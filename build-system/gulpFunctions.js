@@ -5,13 +5,12 @@ const GULPFN_KEY = Symbol.for('edu.emory.build-system.gulp');
 
 const GulpFunctions = function GulpFunctions(){
     this.fn = {};
-    this.dependencies = {};
     Object.defineProperty(this, "instance", {
         get: function(){
           return global[GULPFN_KEY];
         }
       });
-      Object.freeze(this);
+    Object.freeze(this);
     return this;
 };
 
@@ -70,40 +69,7 @@ function reisterGulp4(name, fn, dependencies){
   global[GULPFN_KEY].fn[name] = true;
 };
 
-function reisterGulp3(name, fn, dependencies){
-  let localFn;
-  let localTaskArray;
-  if(typeof dependencies === 'function' && Array.isArray(fn)) {
-    localFn = dependencies;
-    localTaskArray = fn;
-  } else if(typeof fn === 'function' && Array.isArray(dependencies)) {
-    localFn = fn;
-    localTaskArray = dependencies;
-  } else if(!(typeof fn === 'function') && Array.isArray(fn)) {
-    localFn = noopTask;
-    localTaskArray = fn;
-  } else if (typeof fn === 'function' ) {
-    localFn = fn;
-    localTaskArray = dependencies;
-  }
-
-  if (!localFn) {
-    localFn = noopTask;
-  }
-
-  if(!localTaskArray) {
-    localTaskArray = [];
-  }
-
-  gulp.task(name, localTaskArray, localFn);
-
-};
-//Ducktype for 4.x
-if(gulp.series) {
-  GulpFunctions.prototype.register = reisterGulp4;
-} else {
-  GulpFunctions.prototype.register = reisterGulp3;
-}
+GulpFunctions.prototype.register = reisterGulp4;
 
 
 
@@ -113,49 +79,28 @@ GulpFunctions.prototype.watch = function(globs, actions){
   }
   
   //Ducktype for 4.x
-  if(gulp.series) {
-    switch(typeof actions) {
-      
-      case 'function':
-        gulp.watch(globs, {}, actions).on('change', function(path){
+  switch(typeof actions) {
+    
+    case 'function':
+      gulp.watch(globs, {}, actions).on('change', function(path){
+        console.log('File ' + path + ' was changed, running tasks...');
+      });
+    break;
+    
+    case 'string':
+      console.log(gulp.watch(globs, {}, gulp.series(actions, function(done){done();})).on('change', function(path){
+        console.log('File ' + path + ' was changed, running tasks...');
+      }));
+    break;
+    
+    case 'object':
+      if((Array.isArray(actions)) && actions.every(function(value){return typeof value === 'string'})){
+        actions.push(function(done){done();});
+        gulp.watch(globs, {}, gulp.series.apply(gulp,actions)).on('change', function(path){
           console.log('File ' + path + ' was changed, running tasks...');
         });
-      break;
-      
-      case 'string':
-        console.log(gulp.watch(globs, {}, gulp.series(actions, function(done){done();})).on('change', function(path){
-          console.log('File ' + path + ' was changed, running tasks...');
-        }));
-      break;
-      
-      case 'object':
-        if((Array.isArray(actions)) && actions.every(function(value){return typeof value === 'string'})){
-          actions.push(function(done){done();});
-          gulp.watch(globs, {}, gulp.series.apply(gulp,actions)).on('change', function(path){
-            console.log('File ' + path + ' was changed, running tasks...');
-          });
-        }
-      break;
-    
-    }
-  } else {
-    switch(typeof actions) {
-      
-      case 'function':
-        gulp.watch(globs, actions).on('change', logFileChange);
-      break;
-      
-      case 'string':
-      gulp.watch(globs, [actions]).on('change', logFileChange);
-      break;
-      
-      case 'object':
-      if((Array.isArray(actions)) && actions.every(function(value){return typeof value === 'string'})){
-          gulp.watch(globs, actions).on('change', logFileChange);
-        }
-      break;
-    
-    }
+      }
+    break;
   }
 };
 
